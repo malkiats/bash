@@ -1,0 +1,5 @@
+# To list all files that were modified between 2009 and 2011, use find with -newermt:
+find . -type f -newermt '01 jan 2009 00:00:00' -not -newermt '01 jan 2012 00:00:00' -ls
+
+# To remove:
+find . -type f -newermt '01 jan 2009 00:00:00' -not -newermt '01 jan 2012 00:00:00' -delete
