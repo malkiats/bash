@@ -1,0 +1,3 @@
+free -h; free | awk 'FNR == 3 {print "Memory utilization: " $3/($3+$4)*100 "%"}' ; free | awk 'FNR == 4 {print "Swap utilization: " $3/($2)*100 "%"}'
+
+uname -a;w;date; free -h; free | grep Mem | awk '{print "Memory Utilization is " $3/$2 * 100.0}'; free | grep Swap | awk '{print "Swap Utilization is " $3/$2 * 100.0}'
