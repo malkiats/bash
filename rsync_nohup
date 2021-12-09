@@ -1,0 +1,17 @@
+ksh itvimsrd02p # nohup rsync -avzHS --delete -e "ssh -i id_rsa_Malkiat_SINGH" root@151.98.62.171:/srv/data200436/ /srv/data200436/ &
+[1] 11212
+ksh itvimsrd02p # Sending output to nohup.out
+
+[1]+  Stopped                 nohup rsync -avzHS --delete -e "ssh -i id_rsa_Malkiat_SINGH" root@151.98.62.171:/srv/data200436/ /srv/data200436/
+
+ksh itvimsrd02p # fg
+nohup rsync -avzHS --delete -e "ssh -i id_rsa_Malkiat_SINGH" root@151.98.62.171:/srv/data200436/ /srv/data200436/
+Enter passphrase for key 'id_rsa_Malkiat_SINGH':
+
+[1]+  Stopped                 nohup rsync -avzHS --delete -e "ssh -i id_rsa_Malkiat_SINGH" root@151.98.62.171:/srv/data200436/ /srv/data200436/
+
+ksh itvimsrd02p # bg
+[1]+ nohup rsync -avzHS --delete -e "ssh -i id_rsa_Malkiat_SINGH" root@151.98.62.171:/srv/data200436/ /srv/data200436/ &
+
+ksh itvimsrd02p # jobs
+[1]+  Running                 nohup rsync -avzHS --delete -e "ssh -i id_rsa_Malkiat_SINGH" root@151.98.62.171:/srv/data200436/ /srv/data200436/ &
