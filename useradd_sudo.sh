@@ -1,0 +1,1 @@
+cat cete1to10.log | while read n; do echo -n "$n: "; ssh -nq $n "useradd -u 105 -g 100 -G 100 -c 'For App Installation' -d /home/installadmin1 -m -s /bin/ksh installadmin1; echo 'installadmin1:@WSX1qaz' >> installadminpasswd1; echo 'installadmin1     ALL=(ALL) /bin/su - root' >> /etc/sudoers; chpasswd < installadminpasswd1; rm -f installadminpasswd1;id installadmin1";done
