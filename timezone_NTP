@@ -1,0 +1,18 @@
+# timedatectl list-timezones
+# timedatectl set-timezone "Asia/Kuala_Lumpur"
+# timedatectl set-ntp yes
+
+
+# dnf install chrony
+# systemctl status chronyd
+
+# cat /etc/chrony.conf
+
+# timedatectl
+Local time: Wed 2021-07-14 22:52:30 +08
+Universal time: Wed 2021-07-14 14:52:30 UTC
+RTC time: Wed 2021-07-14 14:52:29
+Time zone: Asia/Kuala_Lumpur (+08, +0800)
+System clock synchronized: yes
+NTP service: active
+RTC in local TZ: no
