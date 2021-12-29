@@ -1,0 +1,8 @@
+Install Epel Repo
+# # dnf install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+
+Add Repo
+# dnf config-manager --add-repo http://repo.eight.example.com
+
+List Repo
+# dnf repository-packages epel list
