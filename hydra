@@ -1,0 +1,2 @@
+Example:  hydra -l user -P passlist.txt ftp://192.168.0.1
+[root@node1 ~]# hydra -vV -l root -s 69 -t 3 -P password.txt ssh://192.168.100.101
