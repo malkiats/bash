@@ -6,5 +6,5 @@ Finally add a cronjob to automate this. It will run every 5 minutes.
 */5 * * * * /bin/bash /opt/scripts/service-monitor.sh  
 
 For every minute  
-* * * * * /path/to/script
+* * * * * /path/to/script 
 
