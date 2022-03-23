@@ -16,3 +16,13 @@ Time zone: Asia/Kuala_Lumpur (+08, +0800)
 System clock synchronized: yes
 NTP service: active
 RTC in local TZ: no
+
+ON NTP SERVER
+ntpq -p
+systemctl stop ntpd
+ntpd -gq
+systemctl start ntpd
+
+ON CLIENT
+ntpq -p
+ntpdate -q 192.168.100.11  
