@@ -1,0 +1,30 @@
+# yum install epel-release  
+
+# yum install fail2ban  
+
+# systemctl enable fail2ban  
+
++++++++++++++++++++++++++++++++++++++++++++++++++
+# nano /etc/fail2ban/jail.local  
+[sshd]
+enabled = true
+bantime = 3600000
+# Override /etc/fail2ban/jail.d/00-firewalld.conf:
+banaction = iptables-multiport
+findtime = 600
+maxretry = 3
+ignoreip = 127.0.0.1
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+#  systemctl restart fail2ban  
+
+# iptables -L INPUT -v -n
+Chain INPUT (policy ACCEPT 438 packets, 49758 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+22328   19M f2b-sshd   tcp  --  *      *       0.0.0.0/0            0.0.0.0/0            multiport dports 22
+
+# tail -f /var/log/fail2ban.log
+2022-04-15 04:21:12,850 fail2ban.filter         [29550]: INFO    [sshd] Found 208.107.107.217 - 2022-04-15 04:21:12
+2022-04-15 04:21:13,542 fail2ban.actions        [29550]: NOTICE  [sshd] Ban 208.107.107.217  
+
+
