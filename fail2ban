@@ -18,6 +18,22 @@ ignoreip = 127.0.0.1
 
 #  systemctl restart fail2ban  
 
+# fail2ban-client status
+Status
+|- Number of jail:      1
+`- Jail list:   sshd
+
+# fail2ban-client status sshd
+Status for the jail: sshd
+|- Filter
+|  |- Currently failed: 7
+|  |- Total failed:     214
+|  `- Journal matches:  _SYSTEMD_UNIT=sshd.service + _COMM=sshd
+`- Actions
+   |- Currently banned: 27
+   |- Total banned:     27
+   `- Banned IP list:   61.177.173.36 119.65.149.106 208.107.107.217 45.183.45.12 34.136.69.55 138.68.234.162 61.177.172.76
+
 # iptables -L INPUT -v -n
 Chain INPUT (policy ACCEPT 438 packets, 49758 bytes)
  pkts bytes target     prot opt in     out     source               destination
@@ -27,4 +43,5 @@ Chain INPUT (policy ACCEPT 438 packets, 49758 bytes)
 2022-04-15 04:21:12,850 fail2ban.filter         [29550]: INFO    [sshd] Found 208.107.107.217 - 2022-04-15 04:21:12
 2022-04-15 04:21:13,542 fail2ban.actions        [29550]: NOTICE  [sshd] Ban 208.107.107.217  
 
-
+# Unban
+fail2ban-client set JAILNAMEHERE unbanip IPADDRESSHERE
