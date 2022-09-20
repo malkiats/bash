@@ -1,0 +1,43 @@
+Client will send request to server
+Server send SSL cert back to client which contain public key
+Client start TLS hand shake process ans send data encrypted with servers public key
+Server have corresponding private key that velongs to this certificate
+it can read the client's messages but only server can decrypt the messages.
+Once the TLS process is done client and the server agree on specific standards they generate session keys
+Finally can exchange the data
+
+SSL cert always contains the public key which is shared with anyone who is connecting to the server
+Any corresponding private key that remains on server to decryot the clients messages.
+
+=========================================
+
+1. Generate CA's private key and self-signed certificate
+2. Generate web server's privae key and certificate signing request (CSR)
+3. Use CA's private key to sign web server's CSR and get back the signed certificate
+
+# openssl req -x509 -newkey rsa:4096 -days 365 -keyout ca-key.pem -out ca-cert.pem
+
+# openssl x509 -in ca-cert.pem -noout -text
+
+==========================================
+
+Private key of cert genration
+# openssl genrsa -aes256 -out ca-key.pem 409
+
+Generate a new x509 certificate which is valid for specific time
+# openssl req -new -x509 -sha256 -days 365 -key ca-key.pem -out ca.pem
+
+Human readable ca
+# openssl x509 -in ca.pem -text
+
+Without passphrase
+# openssl genrsa -out cert-key.pem 4096
+
+# echo "subjectAltName=DNS:*.devtechops.net,IP:192.168.100.40" >> extfile.cnf
+
+# openssl x509 -req -sha256 -days 365 -in cert.csr -CA ca.pem -CAkey ca-key.pem  -out cert.pem -extfile extfile.cnf -CAcreateserial
+
+ca-key.pem   > Private key of the certificate
+cert-key.pem > Certificate private key
+cert.csr     > Sign request
+cert.pem     > Cerificate
