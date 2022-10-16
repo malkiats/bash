@@ -3,7 +3,7 @@
 
 ## Edit these ##
 # Space separated list of domains to check
-URLLIST="google.com facebook.com"
+DOMLIST="google.com facebook.com"
 # Send the report
 REPORTEMAIL=malkiat.janjua@gmail.com
 # Additional alert if domain has less than this number of days before expiry
@@ -15,7 +15,7 @@ LOGFILE=/tmp/SSLreport.txt
 # Clear last log
 echo "" > $LOGFILE
 
-for DOMAIN in $DOMAINLIST
+for DOMAIN in $DOMLIST
 do
 	EXPIRY=$( echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
 	EXPIRYSIMPLE=$( date -d "$EXPIRY" +%F )
