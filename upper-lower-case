@@ -1,0 +1,3 @@
+$ tr a-z A-Z < employee.txt
+
+$ tr A-Z a-z < department.txt
