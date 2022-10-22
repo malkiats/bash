@@ -1,0 +1,15 @@
+# find /etc -name "*mail*"
+# find / -type f -size +100M
+
+Find files that are not modified in the last x number of days?
+# find . -mtime +60
+
+Find files that are modified in the last x number of days?
+# find . –mtime -2
+
+Delete all the archive files with extension *.tar.gz and greater than 100MB?
+# find / -type f -name *.tar.gz -size +100M -exec ls -l {} \;
+# find / -type f -name *.tar.gz -size +100M -exec rm -f {} \;
+
+Archive all the files that are not modified in the last x number of days?
+# find /home/jsmith -type f -mtime +60 | xargs tar -cvf /tmp/`date '+%d%m%Y'_archive.tar`
