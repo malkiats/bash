@@ -8,7 +8,7 @@ DOMAINLIST=`cat /root/ssl/domain`
 REPORTEMAIL=`cat /root/ssl/report`
  
 # Additional alert warning prepended if domain has less than this number of days before expiry
-EXPIRYALERTDAYS=30
+EXPIRYALERTDAYS=50
 TENDAYS=10
 
  
@@ -132,21 +132,22 @@ NASTATUS='<i class="circle" style="background-color:#808080"></i>'
  
 for DOMAIN in $DOMAINLIST
 do
-        EXPIRY=$( echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
-        VALIDFROM=$( echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -dates | grep notBefore | sed 's/notBefore=//')
+	JUSTDOMAIN=$( echo $DOMAIN | cut -d ":" -f1 )
+        EXPIRY=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAIN 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
+VALIDFROM=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAIN 2>/dev/null | openssl x509 -noout -dates | grep notBefore | sed 's/notBefore=//')
         EXPIRYSIMPLE=$( date -d "$EXPIRY" +%F ) ### %F full date; same as %Y-%m-%d
         VALIDSIMPLE=$( date -d "$VALIDFROM" +%F )
-        EXPIRYSEC=$(date -d "$EXPIRY" +%s)      ### %s seconds since 2000-01-01 00:00:00 UTC
+  EXPIRYSEC=$(date -d "$EXPIRY" +%s)      ### %s seconds since 2000-01-01 00:00:00 UTC
         TODAYSEC=$(date +%s)
         EXPIRYCALC=$(echo "($EXPIRYSEC-$TODAYSEC)/86400" | bc )
-        ISSUER=$(echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -issuer | sed 's+.*CN=++' | sed 's+.*CN =++')
+        ISSUER=$(echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAIN 2>/dev/null | openssl x509 -noout -issuer | sed 's+.*CN=++' | sed 's+.*CN =++')
  # Output
 
   STATUS=$(if [ $EXPIRYCALC -lt $TENDAYS ] ; then echo $ERRSTATUS; elif [ $EXPIRYCALC -lt $EXPIRYALERTDAYS ] ; then echo $WARNSTATUS; elif [ $EXPIRYCALC -gt $EXPIRYALERTDAYS ] ; then echo $OKSTATUS; else echo $NASTATUS; fi) 
 
        
 echo "  <tr>" >> $LOGFILE
-echo "    <td>$DOMAIN</td>" >> $LOGFILE
+echo "    <td>$JUSTDOMAIN</td>" >> $LOGFILE
 echo "    <td>$VALIDSIMPLE</td>" >> $LOGFILE
 echo "    <td>$EXPIRYSIMPLE</td>" >> $LOGFILE
 echo "    <td style="text-align:center">$EXPIRYCALC</td>" >> $LOGFILE
@@ -224,7 +225,8 @@ echo " </html>" >> $LOGFILE
 
 for DOMAIN in $DOMAINLIST
 do
-        EXPIRY=$( echo | openssl s_client -servername $DOMAIN -connect $DOMAIN:443 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
+	JUSTDOMAIN=$( echo $DOMAIN | cut -d ":" -f1 )
+        EXPIRY=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAIN 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
         EXPIRYSIMPLE=$( date -d "$EXPIRY" +%F )
         EXPIRYSEC=$(date -d "$EXPIRY" +%s)
         TODAYSEC=$(date +%s)
@@ -232,12 +234,12 @@ do
         # Output
         if [ $EXPIRYCALC -lt $EXPIRYALERTDAYS ] ;
         then
-                echo "######ALERT####### $DOMAIN Cert needs to be renewed." >> $LOGSTATUS
-        	      echo "$EXPIRYSIMPLE - $DOMAIN expires (in $EXPIRYCALC days)" >> $LOGSTATUS
-		            mailx -s "######ALERT####### SSL Cert Expiring Soon for $DOMAIN" $REPORTEMAIL < $LOGSTATUS
+                echo "######ALERT####### $JUSTDOMAIN Cert needs to be renewed." >> $LOGSTATUS
+        	echo "Expiry Date: $EXPIRYSIMPLE - expires (in $EXPIRYCALC days)" >> $LOGSTATUS
+		mailx -s "######ALERT####### SSL Cert Expiring Soon for $DOMAIN" $REPORTEMAIL < $LOGSTATUS
 	fi
         	
-		            echo "$EXPIRYSIMPLE - $DOMAIN expires (in $EXPIRYCALC days)" >> $ALERTSTATUS
+		echo "$EXPIRYSIMPLE - $DOMAIN expires (in $EXPIRYCALC days)" >> $ALERTSTATUS
 	done
  
 # Report
