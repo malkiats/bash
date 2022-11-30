@@ -29,10 +29,8 @@ cat <<- EOF >> $LOGFILE
 <head>
 <title>SSL Certificate Monitoring</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 </head>
 <body>
-
 <style>
 * {
   box-sizing: border-box;
@@ -64,11 +62,9 @@ cat <<- EOF >> $LOGFILE
   font-family: verdana;
   padding: 12px;
 }
-
 #myTable th {
   background-color: #FFD580;
 }
-
  
 #myTable tr {
   border-bottom: 1px solid #ddd;
@@ -77,21 +73,17 @@ cat <<- EOF >> $LOGFILE
 #myTable tr.header, #myTable tr:hover {
   background-color: #f1f1f1;
 }
-
 .textContainer {
  display: flex;
  justify-content: center;
 }
-
 .circle {
   height: 25px;
   width: 25px;
   border-radius:50%;
   display:inline-block;
 }
-
 .vertical-center {
-
   position: absolute;
   margin-left: auto;
   margin-right: auto;
@@ -101,18 +93,15 @@ cat <<- EOF >> $LOGFILE
   -ms-transform: translateY(-50%);
   transform: translateY(-50%);
 }
-
 </style>
  
 <br>
 <h1 style=font-family:verdana;color:#231709;text-align:center;> SSL Certificate Monitoring Dashoard</h2>
 <h4 style=font-family:verdana;color:#231709;text-align:center;>Updated at - $(date)</h4><br>
 <div class=textContainer><input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"></div>
-
   <div class="vertical-center">
     <button onclick="sortTable()">Click here to Sort</button>
   </div> <br>
-
 <table id=myTable>
 <tr class=header>
 <th>CERTIFICATE NAME</th>
@@ -121,8 +110,8 @@ cat <<- EOF >> $LOGFILE
 <th>DAYS LEFT</th>
 <th>STATUS</th>
 <th>ISSUER</th>
+<th>SERVER</th>
 </tr>
-
 EOF
 
 OKSTATUS='<i class="circle"; style="background-color:green;"></i>'
@@ -132,15 +121,17 @@ NASTATUS='<i class="circle" style="background-color:#808080"></i>'
  
 for DOMAIN in $DOMAINLIST
 do
+	SRVENV=$( echo $DOMAIN | cut -d "-" -f2 )
+	DOMAINPORT=$( echo $DOMAIN | cut -d "-" -f1 )
 	JUSTDOMAIN=$( echo $DOMAIN | cut -d ":" -f1 )
-        EXPIRY=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAIN 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
-VALIDFROM=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAIN 2>/dev/null | openssl x509 -noout -dates | grep notBefore | sed 's/notBefore=//')
+        EXPIRY=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAINPORT 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
+VALIDFROM=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAINPORT 2>/dev/null | openssl x509 -noout -dates | grep notBefore | sed 's/notBefore=//')
         EXPIRYSIMPLE=$( date -d "$EXPIRY" +%F ) ### %F full date; same as %Y-%m-%d
         VALIDSIMPLE=$( date -d "$VALIDFROM" +%F )
   EXPIRYSEC=$(date -d "$EXPIRY" +%s)      ### %s seconds since 2000-01-01 00:00:00 UTC
         TODAYSEC=$(date +%s)
         EXPIRYCALC=$(echo "($EXPIRYSEC-$TODAYSEC)/86400" | bc )
-        ISSUER=$(echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAIN 2>/dev/null | openssl x509 -noout -issuer | sed 's+.*CN=++' | sed 's+.*CN =++')
+        ISSUER=$(echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAINPORT 2>/dev/null | openssl x509 -noout -issuer | sed 's+.*CN=++' | sed 's+.*CN =++')
  # Output
 
   STATUS=$(if [ $EXPIRYCALC -lt $TENDAYS ] ; then echo $ERRSTATUS; elif [ $EXPIRYCALC -lt $EXPIRYALERTDAYS ] ; then echo $WARNSTATUS; elif [ $EXPIRYCALC -gt $EXPIRYALERTDAYS ] ; then echo $OKSTATUS; else echo $NASTATUS; fi) 
@@ -153,6 +144,7 @@ echo "    <td>$EXPIRYSIMPLE</td>" >> $LOGFILE
 echo "    <td style="text-align:center">$EXPIRYCALC</td>" >> $LOGFILE
 echo "    <td style="text-align:center">$STATUS</td>" >> $LOGFILE
 echo "    <td>$ISSUER</td>" >> $LOGFILE
+echo "    <td>$SRVENV</td>" >> $LOGFILE
 echo "  </tr>" >> $LOGFILE
  
 done
@@ -162,18 +154,20 @@ echo "</table>" >> $LOGFILE
 cat <<- EOF >> $LOGFILE
 <script>
 function myFunction() {
-  var input, filter, table, tr, td, i, txtValue,td5,txtValue5;
+  var input, filter, table, tr, td, i, txtValue,td5,txtValue5,td6,txtValue6;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase();
   table = document.getElementById("myTable");
   tr = table.getElementsByTagName("tr");
   for (i = 0; i < tr.length; i++) {
     td = tr[i].getElementsByTagName("td")[0];
-    td5 = tr[i].getElementsByTagName("td")[5]
-    if (td || td5) {
+    td5 = tr[i].getElementsByTagName("td")[5];
+    td6 = tr[i].getElementsByTagName("td")[6];
+    if (td || td5 || td6) {
       txtValue = td.textContent || td.innerText;
       txtValue5 = td5.textContent || td5.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue5.toUpperCase().indexOf(filter) > -1) {
+      txtValue6 = td6.textContent || td6.innerText;
+      if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue5.toUpperCase().indexOf(filter) > -1 || txtValue6.toUpperCase().indexOf(filter) > -1) {
         tr[i].style.display = "";
       } else {
         tr[i].style.display = "none";
@@ -181,7 +175,6 @@ function myFunction() {
     }      
   }
 }
-
 function sortTable() {
   var table, rows, switching, i, x, y, shouldSwitch;
   table = document.getElementById("myTable");
@@ -216,7 +209,6 @@ function sortTable() {
     }
   }
 }
-
 </script>
 EOF
 echo "  </body>" >> $LOGFILE
@@ -226,7 +218,9 @@ echo " </html>" >> $LOGFILE
 for DOMAIN in $DOMAINLIST
 do
 	JUSTDOMAIN=$( echo $DOMAIN | cut -d ":" -f1 )
-        EXPIRY=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAIN 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
+        DOMAINPORT=$( echo $DOMAIN | cut -d "-" -f1 )
+
+        EXPIRY=$( echo | openssl s_client -servername $JUSTDOMAIN -connect $DOMAINPORT 2>/dev/null | openssl x509 -noout -dates | grep notAfter | sed 's/notAfter=//')
         EXPIRYSIMPLE=$( date -d "$EXPIRY" +%F )
         EXPIRYSEC=$(date -d "$EXPIRY" +%s)
         TODAYSEC=$(date +%s)
