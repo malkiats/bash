@@ -226,3 +226,63 @@ else
 	echo The given file does not has execute access.
 fi
 
+#######################################################
+Comparing Numbers in Bash
+
+Equal: -eq - returns true if the values are equal
+Not equal: -ne - returns true if the values are not equal
+Greater than: -gt - returns true if the value on the left is greater than the value on the right
+Greater than or equal: -ge - returns true if the value on the left is greater than or equal to the value on the right
+Less than: -lt - returns true if the value on the left is less than the value on the right
+Less than or equal: -le - returns true if the value on the left is less than or equal to the value on the right
+
+num1=10
+num2=5
+
+# Equal
+if [[ $num1 -eq $num2 ]]
+then
+  echo "$num1 is equal to $num2"
+else
+  echo "$num1 is not equal to $num2"
+fi
+
+# Not equal
+if [[ $num1 -ne $num2 ]]
+then
+  echo "$num1 is not equal to $num2"
+else
+  echo "$num1 is equal to $num2"
+fi
+
+# Greater than
+if [[ $num1 -gt $num2 ]]
+then
+  echo "$num1 is greater than $num2"
+else
+  echo "$num1 is not greater than $num2"
+fi
+
+# Greater than or equal
+if [[ $num1 -ge $num2 ]]
+then
+  echo "$num1 is greater than or equal to $num2"
+else
+  echo "$num1 is less than $num2"
+fi
+
+# Less than
+if [[ $num1 -lt $num2 ]]
+then
+  echo "$num1 is less than $num2"
+else
+  echo "$num1 is not less than $num2"
+fi
+
+# Less than or equal
+if [[ $num1 -le $num2 ]]
+then
+  echo "$num1 is less than or equal to $num2"
+else
+  echo "$num1 is greater than $num2"
+fi
